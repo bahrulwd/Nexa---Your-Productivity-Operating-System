@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { api } from '../../../lib/api';
+// HAPUS import api lama, GANTI dengan supabase
+import { supabase } from '../../../lib/supabase';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export const RegisterPage: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. Validasi Input Dasar
     if (!name || !email || !password || !passwordConfirm) {
       setError('Harap isi semua kolom formulir.');
       return;
@@ -22,17 +25,31 @@ export const RegisterPage: React.FC = () => {
       setError('Password dan konfirmasi password tidak cocok.');
       return;
     }
+
     setLoading(true);
     setError('');
+
     try {
-      await api.register(name, email, password, passwordConfirm);
+      // 2. Gunakan Supabase untuk Sign Up
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: name, // Menyimpan nama ke metadata Supabase
+          }
+        }
+      });
+
+      // 3. Tangkap error dari Supabase jika ada
+      if (signUpError) throw signUpError;
+
+      // 4. Jika berhasil, arahkan ke onboarding
       navigate('/onboarding');
+
     } catch (err: any) {
-      const msg = err?.response?.data?.message
-        || err?.response?.data?.errors?.email?.[0]
-        || err?.response?.data?.errors?.password?.[0]
-        || 'Pendaftaran gagal. Silakan coba lagi.';
-      setError(msg);
+      // 5. Pesan error Supabase jauh lebih sederhana
+      setError(err.message || 'Pendaftaran gagal. Silakan coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -42,10 +59,9 @@ export const RegisterPage: React.FC = () => {
     setError('Google SSO belum tersedia. Gunakan email dan password.');
   };
 
-
   return (
     <div className="min-h-screen bg-[#FDF5EC] flex items-center justify-center p-4 md:p-6 select-none font-sans overflow-hidden">
-      {/* Main Bento Container - compact padding & height to fit standard screens without scrolling */}
+      {/* Main Bento Container */}
       <main className="w-full max-w-4xl bg-white rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(42,39,83,0.05)] flex flex-col md:flex-row border border-[#F3F4F6]/80 z-10 transition-all duration-300 hover:shadow-[0_25px_60px_rgba(42,39,83,0.08)]">
 
         {/* Left Column: Identity & Branding */}
@@ -67,16 +83,16 @@ export const RegisterPage: React.FC = () => {
 
             {/* Hero Content with Gradient Text */}
             <div className="my-auto py-4">
-              <h1 className="font-display font-extrabold text-[28px] leading-[36px] text-white mb-3 tracking-tight leading-tight">
+              <h1 className="font-display font-extrabold text-[28px] leading-[36px] text-white mb-3 tracking-tight">
                 Begin your focus <br />
                 <span className="text-[#fec886]">journey with us.</span>
               </h1>
-              <p className="font-sans text-[14px] leading-[22px] text-white/70 leading-relaxed font-medium">
+              <p className="font-sans text-[14px] leading-[22px] text-white/70 font-medium">
                 Create workspaces, optimize focus timer blocks, and monitor your workloads in real time.
               </p>
             </div>
 
-            {/* Illustration Tablet Interface - height reduced */}
+            {/* Illustration Tablet Interface */}
             <div className="mt-6 relative z-10 rounded-2xl overflow-hidden border border-white/10 shadow-[0_15px_30px_rgba(0,0,0,0.2)] bg-black/10 group">
               <img
                 className="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
@@ -103,7 +119,7 @@ export const RegisterPage: React.FC = () => {
               </div>
             )}
 
-            {/* Google SSO Button with Transparent Wikimedia SVG Logo */}
+            {/* Google SSO Button */}
             <button
               onClick={handleSSORegister}
               disabled={loading}
@@ -191,10 +207,9 @@ export const RegisterPage: React.FC = () => {
                 />
               </div>
 
-
               {/* Sign Up button */}
               <button
-                className="w-full py-2 bg-gradient-to-r from-[#7C3AED] to-[#6C5DD3] text-white font-display font-bold text-[15px] rounded-xl hover:from-[#6B32CD] hover:to-[#5B4EBE] transition-all duration-300 shadow-md shadow-[#7C3AED]/15 hover:shadow-[#7C3AED]/30 active:scale-95 duration-100 cursor-pointer disabled:opacity-50"
+                className="w-full py-2 bg-gradient-to-r from-[#7C3AED] to-[#6C5DD3] text-white font-display font-bold text-[15px] rounded-xl hover:from-[#6B32CD] hover:to-[#5B4EBE] transition-all duration-300 shadow-md shadow-[#7C3AED]/15 hover:shadow-[#7C3AED]/30 active:scale-95 cursor-pointer disabled:opacity-50"
                 type="submit"
                 disabled={loading}
               >

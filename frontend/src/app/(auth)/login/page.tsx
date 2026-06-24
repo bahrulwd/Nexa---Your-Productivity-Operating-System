@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { api } from '../../../lib/api';
+// HAPUS import api lama, GANTI dengan supabase
+import { supabase } from '../../../lib/supabase';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -12,20 +13,32 @@ export const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. Validasi Input Dasar
     if (!email || !password) {
       setError('Harap isi semua kolom formulir.');
       return;
     }
+
     setLoading(true);
     setError('');
+
     try {
-      await api.login(email, password);
+      // 2. Gunakan Supabase untuk Sign In
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      // 3. Tangkap error dari Supabase jika ada
+      if (signInError) throw signInError;
+
+      // 4. Jika berhasil, arahkan ke halaman utama/dashboard
       navigate('/');
+
     } catch (err: any) {
-      const msg = err?.response?.data?.message
-        || err?.response?.data?.errors?.email?.[0]
-        || 'Email atau password salah.';
-      setError(msg);
+      // 5. Pesan error Supabase
+      setError(err.message || 'Email atau password salah.');
     } finally {
       setLoading(false);
     }
@@ -34,7 +47,6 @@ export const LoginPage: React.FC = () => {
   const handleSSOLogin = async () => {
     setError('Google SSO belum tersedia. Gunakan email dan password.');
   };
-
 
   return (
     <div className="min-h-screen bg-[#FDF5EC] flex items-center justify-center p-4 md:p-6 select-none font-sans overflow-hidden">
