@@ -36,17 +36,18 @@
   
   **1. Smart Dashboard & Workload Monitoring**
   <img src="frontend/public/images/antarmukaNexa/dashboard.png" alt="Nexa Dashboard" width="100%">
+  <img src="frontend/public/images/antarmukaNexa/workload.png" alt="Nexa Workload" width="100%">
 
   **2. Interactive Split-Screen Onboarding**
   <img src="frontend/public/images/antarmukaNexa/onboarding1.png" alt="Nexa Onboarding Step 1" width="100%">
   <img src="frontend/public/images/antarmukaNexa/onboarding2.png" alt="Nexa Onboarding Step 2" width="100%">
-  <img src="frontend/public/images/antarmukaNexa/onboarding3.png" alt="Nexa Onboarding Step" width="100%">
+  <img src="frontend/public/images/antarmukaNexa/onboarding3.png" alt="Nexa Onboarding Step 3" width="100%">
 
   **3. Nexa Focus Hub & Pomodoro Timer**
-  <img src="frontend/public/images/antarmukaNexa/focus.png" alt="Nexa Focus Mode" width="100%">
+  <img src="frontend/public/images/antarmukaNexa/focusmode.png" alt="Nexa Focus Mode" width="100%">
   
   **4. My Tasks & Priority Score Sorting**
-  <img src="frontend/public/images/antarmukaNexa/mytasks.png" alt="Nexa Tasks" width="100%">
+  <img src="frontend/public/images/antarmukaNexa/mytask.png" alt="Nexa Tasks" width="100%">
   
 </details>
 
